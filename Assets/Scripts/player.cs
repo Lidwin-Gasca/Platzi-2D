@@ -14,6 +14,7 @@ public class player : MonoBehaviour
     Vector2 facingDirection;
     [SerializeField] Transform bulletPrefab;
     bool gunLoaded = true;
+    bool powerShotEnabled = true;
     [SerializeField] float fireRate = 1;
 
     // Start is called before the first frame update
@@ -61,6 +62,22 @@ public class player : MonoBehaviour
         if (health <= 0)// si la salud llega a cero, hacemos que se muera
         {
             //Destroy(gameObject); //se muere
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("powerUp"))
+        {
+            switch (collision.GetComponent<powerUp>().powerUpType)
+            {
+                case powerUp.PowerUpType.FireRateIncrease:
+                    fireRate++;//Incrementar cadencia de disparo
+                    break;
+                case PowerUp.PowerUpType.PowerShot:
+                    powerShotEnabled = true;//Activar el power shot
+                    break;
+            }
+            Destroy(collision.gameObject, 0.1f);
         }
     }
 }
