@@ -16,6 +16,8 @@ public class player : MonoBehaviour
     bool gunLoaded = true;
     bool powerShotEnabled = true;
     [SerializeField] float fireRate = 1;
+    [SerializeField] bool invulnerable;
+    [SerializeField] int invulnerableTime = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -43,7 +45,11 @@ public class player : MonoBehaviour
             gunLoaded = false;
             float angle = Mathf.Atan2(facingDirection.y, facingDirection.x) * Mathf.Rad2Deg; //esta variable se crea para que la bala salga disparado hacia la direccion del mouse.
             Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward); //con esta linea de codigo haces que funcione la variable "angle".
-            Instantiate(bulletPrefab, transform.position, targetRotation); //Esta Instancia, crea eso, instancias, crea balas, y los parametros indican hacia donde se dirijen.  
+            Transform bulletClone = Instantiate(bulletPrefab, transform.position, targetRotation); //Esta Instancia, crea eso, instancias, crea balas, y los parametros indican hacia donde se dirijen.  
+            if (powerShotEnabled)// esto significa: "if (powerShotEnabled == true)"
+            {
+                bulletClone.GetComponent<bullet>().powerShot = true;//GetComponent significa Obtener Componente, se usa para llamar a otro archivo .cs, y usar variables publicas de ese archivo script.
+            }
             StartCoroutine(ReloadGun());
         }
         // if(Input.GetMouseButton(0) == false){  //con este "if" declaro que cuando sueltas el click izquierdo tu variable arma cargada "gunLoaded" sea verdadero de nuevo "true", es decir puedes vovler a disparar una vez dejes de presionar el click izquierdo.
@@ -58,13 +64,21 @@ public class player : MonoBehaviour
         //Metodo de daño
     public void TakeDamage()
     {
+        if (invulnerable)
+            return;
         health --;//hace que baje la salud del jugador
+        invulnerable = true;
+        StartCoroutine(MakeVulnerableAgain());
         if (health <= 0)// si la salud llega a cero, hacemos que se muera
         {
             //Destroy(gameObject); //se muere
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    IEnumerator MakeVulnerableAgain(){
+        yield return new WaitForSeconds(invulnerableTime);
+        invulnerable = false;
+    }
+    private void OnTriggerEnter2D(Collider2D collision)//esto es creado para interactuar con los power ups
     {
         if (collision.CompareTag("powerUp"))
         {
@@ -73,7 +87,7 @@ public class player : MonoBehaviour
                 case powerUp.PowerUpType.FireRateIncrease:
                     fireRate++;//Incrementar cadencia de disparo
                     break;
-                case PowerUp.PowerUpType.PowerShot:
+                case powerUp.PowerUpType.PowerShot:
                     powerShotEnabled = true;//Activar el power shot
                     break;
             }
