@@ -9,6 +9,8 @@ public class enemy : MonoBehaviour
     [SerializeField] int health = 1;
     //Velocidad del enemigo
     [SerializeField] float speed = 1;
+    //Puntaje por destruir enemigos
+    [SerializeField] int scorePoint = 100;
 
     private void Start()
     {
@@ -32,6 +34,7 @@ public class enemy : MonoBehaviour
         health --;//se le baja una unidad de vida
         if (health <= 0)//si vida, llega a cero
         {
+            gameManager.Instance.Score += scorePoint;//Esto crea una Instancia del Script "gameManager.cs" mandamos a llamar una variable publica llamada Score. y se le suma a su valor (+=) el valor de "scorePoint".    🎈PARA MAS INFORMACION `The += operator adds the value of the variable on the left with the value on the right, which is (result) then assigned to the variable that is on the left`
             Destroy(gameObject); //se muere
         }
     }
