@@ -8,7 +8,7 @@ public class player : MonoBehaviour
     float mov_horizontal;
     float mov_vertical;
     Vector3 moveDirection;
-    [SerializeField] float speed = 3;
+    public float speed = 3;
     [SerializeField] Transform aim;
     [SerializeField] Camera camera;
     Vector2 facingDirection;
